@@ -12,6 +12,7 @@ const App: React.FC = () => {
   const [likedUser, setLikedUser] = useState<likedType>({})
   const [modal, setModal] = useState(false)
   const [editId, setEditId] = useState(0)
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
 
   const getUsers = async () => {
     setLoading(true)
@@ -49,14 +50,12 @@ const App: React.FC = () => {
 
   const handleEditUser = async (userData: User) => {
     try {
-      setLoading(true)
       await updateUser(userData)
       setData((prevData) => {
         return prevData.map((user: User) => {
           if (user.id === editId) {
             return userData
           }
-          setLoading(false)
           return user
         })
       })
@@ -66,8 +65,14 @@ const App: React.FC = () => {
   }
 
   const handleClickModal = async (id: number) => {
-    setModal(!modal)
-    setEditId(id)
+    setModal(!modal);
+    setEditId(id);
+    const currentUser = data.find(user => user.id === id);
+    if (currentUser) {
+        setCurrentUser(currentUser)
+    } else {
+        setCurrentUser(null)
+    }
   }
 
   const handleModal = async () => {
@@ -77,7 +82,7 @@ const App: React.FC = () => {
   return (
     loading ? <Loadingsquare /> : errorMsg ? <h1>{errorMsg.message}</h1> :
     <>
-      {modal ? <Modal onClose={handleModal} id={editId} onSave={handleEditUser} /> : null }
+      {modal ? <Modal onClose={handleModal} onSave={handleEditUser} user={currentUser} /> : null }
       <div className='grid grid-cols-4 gap-4 p-5'>
         {
           data.map((user: User) => {

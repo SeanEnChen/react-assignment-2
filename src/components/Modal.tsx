@@ -3,36 +3,29 @@ import { modalType } from '../types/ types'
 import { fetchUser } from 'services/api'
 import { User } from '../types/ types'
 
-const Modal = ({onClose, id, onSave}: modalType) => {
+interface modalTypeWithUser extends modalType {
+    user: User | null;
+}
+
+const Modal: React.FC<modalTypeWithUser> = ({onClose, onSave, user}: modalTypeWithUser) => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [website, setWebsite] = useState('')
-  const [userData, setUserData] = useState<User | null>(null)
 
   useEffect(() => {
-    const getUser = async () => {
-      try {
-        const resData = await fetchUser(id); // 使用您现有的 fetchUser 函数
-        setName(resData.name)
-        setEmail(resData.email)
-        setPhone(resData.phone)
-        setWebsite(resData.website)
-        setUserData(resData)
-      } catch (error) {
-        console.error('Error fetching user:', error);
-      }
+    if (user) {
+      setName(user.name)
+      setEmail(user.email)
+      setPhone(user.phone)
+      setWebsite(user.website)
     }
-
-    if (id) {
-      getUser()
-    }
-  }, [id])
+  }, [user]);
 
   const handleSave = () => {
-    if (userData){
+    if (user){
       const updatedUser = {
-        ...userData,
+        ...user,
         name,
         email,
         phone,

@@ -35,7 +35,6 @@ export interface likedType {
 }
 
 export interface modalType {
-    onClose: () => void
-    id: number
-    onSave: (data: User) => void
+    onClose: () => void;
+    onSave: (userData: User) => void;
 }
